@@ -31,7 +31,7 @@ Ce dépôt présente un aperçu du rendu et fonctionnement de la fonction "Calcu
 
 2. Open folder
     ```sh
-    cd visualisateur_calcul_a_volee
+    cd PourMakina_webAE/visualisateur_calcul_a_volee
     ```
 3. Install packages
    ```sh
