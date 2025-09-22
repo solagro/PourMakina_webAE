@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon"
+      href="https://openlayers.org/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Plateforme AE</title>
+      <!-- filesaver-js -->
+  <script type="text/javascript" src="https://cdn.rawgit.com/eligrey/FileSaver.js/aa9f4e0e/FileSaver.min.js"></script>
+  		<!-- Load plotly.js into the DOM -->
+	<script src='https://cdn.plot.ly/plotly-2.24.1.min.js'></script>
+  </head>
+  <!-- Pour pouvoir appliquer style issue d'un SLD/XML-->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/codemirror.min.css" />
+  <body>
+    <!-- l'objet Carte -->
+    <div id="map"></div>
+  <!-- Content of the menu -->
+  <div id="menu">
+    <h1>Exploitation Test</h1>
+    <p style="border-bottom:1px solid #999;">
+      <div class="data"></div>
+    </p>
+
+   
+    
+  </div>
+  <div id='myDiv' style="display:none;">
+  
+  </div>
+    <!-- textarea pour le style de la carte -->
+    <textarea id="sld" style="display:none;"></textarea>
+<!--Pour éviter l'erreur: Uncaught ReferenceError: exports is not defined -->
+    <script>var exports = {};</script>
+<!-- Code mirror: nécessaire pour pouvoir appliquer un style issue d'un fichier SLD/XML-->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/codemirror.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/mode/xml/xml.min.js"></script>
+<!--jquery-->
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
+      <!-- monotone-chain-convex-hull -->
+      <script src="https://cdn.jsdelivr.net/npm/monotone-chain-convex-hull@1.1.0/lib/index.min.js"></script>
+    <!-- lien vers script main.js -->
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

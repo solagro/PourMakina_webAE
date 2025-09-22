@@ -1,0 +1,27 @@
+{
+  "name": "2209_plateforme_ae_test",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  },
+  "dependencies": {
+    "@nieuwlandgeo/sldreader": "^0.4.3",
+    "@pdfme/common": "^5.2.11",
+    "@pdfme/generator": "^5.2.11",
+    "@pdfme/ui": "^5.2.11",
+    "dom-to-image-more": "^3.5.0",
+    "geoportal-extensions-openlayers": "^3.4.4",
+    "html-to-image": "^1.11.11",
+    "jspdf": "^2.5.2",
+    "monotone-chain-convex-hull": "^1.1.0",
+    "ol": "^10.2.1",
+    "ol-ext": "^4.0.24",
+    "shpjs": "^6.1.0",
+    "simple-get-json": "^10.0.0"
+  }
+}
