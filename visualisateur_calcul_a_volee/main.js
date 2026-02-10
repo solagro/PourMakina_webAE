@@ -30,8 +30,9 @@ import { register } from "ol/proj/proj4.js";
 import SLDReader from "@nieuwlandgeo/sldreader/dist/sldreader.js";
 import { Fill, Stroke, Style, Text } from "ol/style.js";
 import { Select, defaults as defaultInteractions } from "ol/interaction.js";
-import PrintDialog from "ol-ext/control/PrintDialog.js";
+//import PrintDialog from "ol-ext/control/PrintDialog.js";
 import * as Conditions from "ol/events/condition.js";
+import { Control, defaults as defaultCont } from "ol/control";
 /*Overlay Menu*/
 import Overlay from "ol-ext/control/Overlay.js";
 import Toggle from "ol-ext/control/Toggle.js";
@@ -43,7 +44,7 @@ import { getJSON } from "./node_modules/simple-get-json/dist/index-es.js";
 /* La projection EPSG:2154 est utilisée pour les données du RPG Drag */
 proj4.defs(
   "EPSG:2154",
-  "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+  "+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
 );
 /* Register la projection */
 register(proj4);
@@ -95,7 +96,7 @@ function applySLD(vectorLayer, text) {
         return ol.proj.getPointResolution(
           viewProjection,
           viewResolution,
-          viewCenter
+          viewCenter,
         );
       },
       // If you use point icons with an ExternalGraphic, you have to use imageLoadCallback
@@ -104,61 +105,61 @@ function applySLD(vectorLayer, text) {
       imageLoadedCallback: () => {
         vectorLayer.changed();
       },
-    })
+    }),
   );
 }
 
 /* apply Prairies humides style */
 var style_zh = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(1))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* apply RPG style (sans étiquette)*/
 var style_rpg = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(0))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* apply Lisières boisées style */
 var style_lis = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(2))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* apply Haies style */
 var style_haie = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(3))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 
 /* apply style BNI*/
 var style_bni = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(4))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* apply style BIO*/
 var style_bio = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(5))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* apply style Couvert Hiver*/
 var style_chiver = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(6))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 
 /* apply style STH PT*/
 var style_sth_pt = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(7))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* apply style non traitée*/
 var style_nt = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(8))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* apply stylelégumineuse*/
 var style_leg = SLDReader.createOlStyleFunction(
   SLDReader.getStyle(SLDReader.getLayer(SLDReader.Reader(await fun(9))))
-    .featuretypestyles[0]
+    .featuretypestyles[0],
 );
 /* Fetch style file */
 async function fun(index) {
@@ -219,6 +220,7 @@ const labelStyle = new Style({
 /********* FIN DES STYLES **************************** */
 /* Ajout d'une couche vectorielle pour le RPG Drag */
 /* Données issues du Drop sous format string geojson pour intégration à BDD */
+
 let rpg;
 let geom = new GeoJSON();
 /* Création de la source de données pour la couche vectorielle */
@@ -244,7 +246,7 @@ var layerExp = new VectorLayer({
   title: "",
   source: new VectorSource({
     url:
-      "http://localhost:9000/functions/postgisftw.indicateurs_ae_exploitation/items.json?limit=5000&in_geom=" +
+      "http://localhost:9000/functions/postgisftw.hvn_score_total_rpgexp/items.json?limit=5000&territoire=web&in_geom=" +
       rpg,
     format: new GeoJSON(),
     projection: "EPSG:3857",
@@ -361,40 +363,15 @@ layerDrop.on("change", function () {
     title: "Assolement",
     source: new VectorSource({
       url:
-        "http://localhost:9000/functions/postgisftw.indicateurs_ae_exploitation/items.json?limit=5000&in_geom=" +
-        rpg,
-      format: new GeoJSON(),
-      projection: "EPSG:3857",
-      features: [],
-    }),
-    style: style_rpg,
-  });
-  layerBni = new VectorLayer({
-    title: "Parcelles à bas niveau d'intrants",
-    source: new VectorSource({
-      url:
-        "http://localhost:9000/functions/postgisftw.indicateurs_ae_exploitation/items.json?limit=5000&in_geom=" +
-        rpg,
-      format: new GeoJSON(),
-      projection: "EPSG:3857",
-      features: [],
-    }),
-    visible: false,
-    style: style_bni,
-  });
-  layerHvn = new VectorLayer({
-    title: "Score HVN",
-    source: new VectorSource({
-      url:
         "http://localhost:9000/functions/postgisftw.hvn_score_total_rpgexp/items.json?limit=5000&territoire=web&in_geom=" +
         rpg,
       format: new GeoJSON(),
       projection: "EPSG:3857",
       features: [],
     }),
-    visible: false,
     style: style_rpg,
   });
+
   layerHaies = new VectorLayer({
     title: "Haies",
     source: new VectorSource({
@@ -447,72 +424,14 @@ layerDrop.on("change", function () {
     visible: false,
     style: style_bio,
   });
-  layerchiver = new VectorLayer({
-    title: "Sol couvert en hiverpar la culture principale",
-    source: new VectorSource({
-      url:
-        "http://localhost:9000/functions/postgisftw.indicateurs_ae_exploitation/items.json?limit=5000&in_geom=" +
-        rpg,
-      format: new GeoJSON(),
-      projection: "EPSG:3857",
-      features: [],
-    }),
-    visible: false,
-    style: style_chiver,
-  });
-  layersthpt = new VectorLayer({
-    title: "Surface toujours en herbe (y compris prairies temporaires)",
-    source: new VectorSource({
-      url:
-        "http://localhost:9000/functions/postgisftw.indicateurs_ae_exploitation/items.json?limit=5000&in_geom=" +
-        rpg,
-      format: new GeoJSON(),
-      projection: "EPSG:3857",
-      features: [],
-    }),
-    visible: false,
-    style: style_sth_pt,
-  });
-  layerNT = new VectorLayer({
-    title: "Surface non traitée",
-    source: new VectorSource({
-      url:
-        "http://localhost:9000/functions/postgisftw.indicateurs_ae_exploitation/items.json?limit=5000&in_geom=" +
-        rpg,
-      format: new GeoJSON(),
-      projection: "EPSG:3857",
-      features: [],
-    }),
-    visible: false,
-    style: style_nt,
-  });
-  layerLeg = new VectorLayer({
-    title: "Légumineuses",
-    source: new VectorSource({
-      url:
-        "http://localhost:9000/functions/postgisftw.indicateurs_ae_exploitation/items.json?limit=5000&in_geom=" +
-        rpg,
-      format: new GeoJSON(),
-      projection: "EPSG:3857",
-      features: [],
-    }),
-    visible: false,
-    style: style_leg,
-  });
 
   // Add layers to map
   if (layerDrop.getSource().getState() === "ready") {
     map.addLayer(layerExp);
-    map.addLayer(layerHvn);
     map.addLayer(layerHaies);
     map.addLayer(layerLisieres);
     map.addLayer(layerZH);
-    map.addLayer(layerBni);
     map.addLayer(layerBio);
-    map.addLayer(layerchiver);
-    map.addLayer(layersthpt);
-    map.addLayer(layerNT);
-    map.addLayer(layerLeg);
   }
   // Set style
   layerExp.setStyle(label_rpg);
@@ -539,12 +458,12 @@ layerDrop.on("change", function () {
       if (
         rpg_colors.includes(
           xmlDoc.getElementsByTagName("se:SvgParameter")[i].childNodes[0]
-            .nodeValue
+            .nodeValue,
         ) == false
       ) {
         rpg_colors.push(
           xmlDoc.getElementsByTagName("se:SvgParameter")[i].childNodes[0]
-            .nodeValue
+            .nodeValue,
         );
       }
     }
@@ -576,22 +495,7 @@ layerDrop.on("change", function () {
     }
     legende.getItems().clear();
     legende.addItem(assolementLegend);
-    // Légende HVN- Assolement
-    var hvnLegend = new Legend({ layer: layerHvn });
-    for (let i = 0; i < cult_in_rpg.length; i++) {
-      for (let key in rpg_lbl) {
-        if (rpg_lbl[key] === cult_in_rpg[i]) {
-          hvnLegend.addItem({
-            title: rpg_lbl[key],
-            typeGeom: "Polygon",
-            style: new Style({
-              fill: new Fill({ color: rpg_colors[key] }),
-            }),
-          });
-        }
-      }
-    }
-    legende.addItem(hvnLegend);
+
     /*Légende Haies*/
     var haiesLegend = new Legend({ layer: layerHaies });
     haiesLegend.addItem({
@@ -599,8 +503,8 @@ layerDrop.on("change", function () {
       typeGeom: "LineString",
       style: style_haie,
     });
-
     legende.addItem(haiesLegend);
+
     /*Légende Lisières*/
     var lisLegend = new Legend({ layer: layerLisieres });
     lisLegend.addItem({
@@ -608,8 +512,8 @@ layerDrop.on("change", function () {
       typeGeom: "LineString",
       style: style_lis,
     });
-
     legende.addItem(lisLegend);
+
     /*Légende Prairie humide*/
     var phLegend = new Legend({ layer: layerZH });
     phLegend.addItem({
@@ -617,27 +521,9 @@ layerDrop.on("change", function () {
       typeGeom: "Polygon",
       style: style_zh,
     });
-
     legende.addItem(phLegend);
-    /* Légende BNI*/
-    var bniLegend = new Legend({ layer: layerBni });
-    bniLegend.addItem({
-      title: "Bas niveau d'intrant",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#33a02c" }),
-      }),
-    });
-    bniLegend.addItem({
-      title: "Autre",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#676767" }),
-      }),
-    });
-    legende.addItem(bniLegend);
-    /*Légende BIO*/
 
+    /*Légende BIO*/
     var bioLegend = new Legend({ layer: layerBio });
     bioLegend.addItem({
       title: "Parcelle BIO",
@@ -654,94 +540,6 @@ layerDrop.on("change", function () {
       }),
     });
     legende.addItem(bioLegend);
-
-    /*Légende Couvert hiver*/
-
-    var chiverLegend = new Legend({ layer: layerchiver });
-    chiverLegend.addItem({
-      title: "Sol couvert en hiver par la" + "\n" + "culture principale",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#ff7f00" }),
-      }),
-    });
-    chiverLegend.addItem({
-      title: "Sol partiellement couvert en" + "\n" + "hiver",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#fdbf6f" }),
-      }),
-    });
-    chiverLegend.addItem({
-      title:
-        "Sol non couvert en hiver par la" +
-        "\n" +
-        "culture principale" +
-        "\n" +
-        "(mais peut être couvert par une interculture)",
-      typeGeom: "Polygon",
-      titleStyle: "9px sans-serif",
-      style: new Style({
-        fill: new Fill({ color: "#676767" }),
-      }),
-    });
-    legende.addItem(chiverLegend);
-
-    /*Légende STH PT*/
-
-    var sthptLegend = new Legend({ layer: layersthpt });
-    sthptLegend.addItem({
-      title: "Parcelle toujours en herbe",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#33a02c" }),
-      }),
-    });
-    sthptLegend.addItem({
-      title: "Autre",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#676767" }),
-      }),
-    });
-    legende.addItem(sthptLegend);
-
-    /*Légende Non traitée*/
-
-    var ntLegend = new Legend({ layer: layerNT });
-    ntLegend.addItem({
-      title: "Parcelle non-traitée",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#33a02c" }),
-      }),
-    });
-    ntLegend.addItem({
-      title: "Surface traitée",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#e31a1c" }),
-      }),
-    });
-    legende.addItem(ntLegend);
-    /*Légende Non traitée*/
-
-    var legLegend = new Legend({ layer: layerLeg });
-    legLegend.addItem({
-      title: "Légumineuse",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#33a02c" }),
-      }),
-    });
-    legLegend.addItem({
-      title: "Autre",
-      typeGeom: "Polygon",
-      style: new Style({
-        fill: new Fill({ color: "#676767" }),
-      }),
-    });
-    legende.addItem(legLegend);
   });
 
   /* Display informations in the overlay menu*/
@@ -751,23 +549,25 @@ layerDrop.on("change", function () {
       rpg,
     function (data) {
       /*Dans overlay menu*/
-      info = $("<div>")
+      info = $("<div class=unstyled-table>")
         .append($("<tr>"))
         .append($("<th>").text("SAU"))
         .append(
-          $("<td>").text(data.features[0].properties.sau.toFixed(2) + "ha")
+          $("<td>").text(data.features[0].properties.sau.toFixed(2) + "ha"),
         )
         .append($("<tr>"))
         .append($("<th>").text("SAU BIO"))
         .append(
-          $("<td>").text(data.features[0].properties.sau_bio.toFixed(2) + " ha")
+          $("<td>").text(data.features[0].properties.sau_bio.toFixed(2) + "ha"),
         )
         .append($("<tr>"))
         .append($("<th>").text("Part de l'agriculture biologique"))
         .append(
-          $("<td>").text(data.features[0].properties.p_bio.toFixed(2) + " %")
+          $("<td>").text(
+            data.features[0].properties.p_bio.toFixed(2) * 100 + " %",
+          ),
         );
-    }
+    },
   );
   /* ADD HVN info*/
   getJSON(
@@ -778,12 +578,12 @@ layerDrop.on("change", function () {
         .append($("<tr>"))
         .append($("<th>").text("Diversité de l’assolement sur 10 points"))
         .append(
-          $("<td>").text(data.features[0].properties.score_i1_grpb.toFixed(2))
+          $("<td>").text(data.features[0].properties.score_i1_grpb.toFixed(2)),
         )
         .append($("<tr>"))
         .append($("<th>").text("Extensivité des pratiques sur 10 points"))
         .append(
-          $("<td>").text(data.features[0].properties.score_hvn_i2.toFixed(2))
+          $("<td>").text(data.features[0].properties.score_hvn_i2.toFixed(2)),
         )
         .append($("<tr>"))
         .append($("<th>").text("Diversité des infrastructures agroécologiques"))
@@ -791,40 +591,46 @@ layerDrop.on("change", function () {
         .append($("<tr>"))
         .append($("<th>").text("Score Haute Valeur Naturelle sur 30 points"))
         .append(
-          $("<td>").text(data.features[0].properties.score_hvn_total.toFixed(2))
+          $("<td>").text(
+            data.features[0].properties.score_hvn_total.toFixed(2),
+          ),
         )
         .append($("<tr>"))
         .append($("<th>").text("Longueur totale de haie"))
         .append(
-          $("<td>").text(data.features[0].properties.len_haies_exp.toFixed(2))
+          $("<td>").text(data.features[0].properties.len_haies_exp.toFixed(2)),
         )
         .append($("<tr>"))
         .append($("<th>").text("Longueur totale de lisière de bois"))
         .append(
           $("<td>").text(
-            data.features[0].properties.len_lisieres_exp.toFixed(2)
-          )
+            data.features[0].properties.len_lisieres_exp.toFixed(2),
+          ),
         )
         .append($("<tr>"))
         .append($("<th>").text("Densité des haies et lisières de bois"))
         .append(
           $("<td>").text(
-            data.features[0].properties.densite_haies_lisiere.toFixed(2)
-          )
+            data.features[0].properties.densite_haies_lisiere.toFixed(2),
+          ),
         )
         .append($("<tr>"))
         .append(
-          $("<th>").text("Surface totale de prairies permanentes humides")
+          $("<th>").text("Surface totale de prairies permanentes humides"),
         )
         .append(
-          $("<td>").text(data.features[0].properties.surf_prairie_nat_exp)
+          $("<td>").text(
+            data.features[0].properties.surf_prairie_nat_exp + "ha",
+          ),
         )
         .append($("<tr>"))
         .append($("<th>").text("Part de prairies permanentes humides"))
         .append(
-          $("<td>").text(data.features[0].properties.part_prai_nat.toFixed(2))
+          $("<td>").text(
+            data.features[0].properties.part_prai_nat.toFixed(2) + "%",
+          ),
         );
-    }
+    },
   );
   /* Camembert représentant les 5 cultures principales de l'exploitation */
   getJSON(
@@ -888,9 +694,9 @@ layerDrop.on("change", function () {
       ];
 
       var layout = {
-        height: 1000,
+        height: 900,
 
-        width: 1000,
+        width: 900,
         title: {
           text: "Cultures principales",
         },
@@ -921,7 +727,76 @@ layerDrop.on("change", function () {
         var content = $("<div>").append(info).append(img);
         $(".data").html(content);
       });
-    }
+    },
+  );
+
+  /* Tableau résultats*/
+  getJSON(
+    "http://localhost:9000/functions/postgisftw.get_indicateurs_ae_exploitation_table/items.json?limit=5000&territoire=web&in_geom=" +
+      rpg,
+    function (data) {
+      var tr;
+      for (var i = 0; i < data.length; i++) {
+        tr = $("<tr/>");
+        tr.append("<td>" + (i + 1) + "</td>");
+        tr.append("<td>" + data[i].pacage + "</td>");
+        tr.append("<td>" + data[i].campagne + "</td>");
+        tr.append("<td>" + data[i].sau + "</td>");
+        tr.append("<td>" + data[i].sau_bio + "</td>");
+        tr.append("<td>" + data[i].part_sau_bio + "</td>");
+        tr.append("<td>" + data[i].surf_cop + "</td>");
+        tr.append("<td>" + data[i].surf_cer_a_paille + "</td>");
+        tr.append("<td>" + data[i].surf_cer_secondaires + "</td>");
+        tr.append("<td>" + data[i].surf_prairies_permanentes + "</td>");
+        tr.append("<td>" + data[i].surf_toujours_en_herbe.toFixed(2) + "</td>");
+        tr.append("<td>" + data[i].surf_prairies_temporaires + "</td>");
+        tr.append("<td>" + data[i].surf_legumineuses + "</td>");
+        tr.append("<td>" + data[i].part_surf_legumineuses + "</td>");
+        tr.append("<td>" + data[i].nbr_parcelles + "</td>");
+        tr.append("<td>" + data[i].nbr_parc_moins_6ha + "</td>");
+        tr.append("<td>" + data[i].part_parc_moins_6ha + "</td>");
+        tr.append(
+          "<td>" + data[i].taille_moyenne_parcelle.toFixed(2) + "</td>",
+        );
+        tr.append("<td>" + data[i].surf_parc_moins_6ha + "</td>");
+        tr.append("<td>" + data[i].part_surf_parc_moins_6ha + "</td>");
+        tr.append("<td>" + data[i].surf_couverte_en_hiver + "</td>");
+        tr.append("<td>" + data[i].part_surf_couverte_en_hiver + "</td>");
+        tr.append("<td>" + data[i].nb_cultures + "</td>");
+        tr.append("<td>" + data[i].nb_cultures_sup_10pct_sau + "</td>");
+        tr.append("<td>" + data[i].diversite_assolement + "</td>");
+        tr.append("<td>" + data[i].surf_bande_enherbee + "</td>");
+        tr.append("<td>" + data[i].surf_bta_adj_haie + "</td>");
+        tr.append("<td>" + data[i].surf_bta_adj_lisiere + "</td>");
+        tr.append("<td>" + data[i].surf_bordure_foret + "</td>");
+        tr.append("<td>" + data[i].surf_jachere + "</td>");
+        tr.append("<td>" + data[i].surf_jachere_iae + "</td>");
+        tr.append("<td>" + data[i].surf_jachere_derog_uk + "</td>");
+        tr.append("<td>" + data[i].long_haie_ml + "</td>");
+        tr.append("<td>" + data[i].lon_haie_bta_ml + "</td>");
+        tr.append("<td>" + data[i].long_haie_hors_bta_ml + "</td>");
+        tr.append("<td>" + data[i].long_lisiere_ml + "</td>");
+        tr.append("<td>" + data[i].long_lisiere_bfps_ml + "</td>");
+        tr.append(
+          "<td>" + data[i].long_lisiere_hors_bfps_ml.toFixed(2) + "</td>",
+        );
+        tr.append("<td>" + data[i].part_haie_10m.toFixed(2) + "</td>");
+        tr.append("<td>" + data[i].part_haie_20m + "</td>");
+        tr.append("<td>" + data[i].part_lisiere_5m.toFixed(2) + "</td>");
+        tr.append("<td>" + data[i]["part_lisiere_8m"].toFixed(2) + "</td>");
+        tr.append(
+          "<td>" +
+            data[i]["part_IAE(haies10m, lisières5m, bta, jac)"] +
+            "</td>",
+        );
+        tr.append(
+          "<td>" +
+            data[i]["part_IAE(haies10m, lisières5m, prairies_perm, bta, jac)"] +
+            "</td>",
+        );
+        $("table").append(tr);
+      }
+    },
   );
 });
 
@@ -1002,10 +877,7 @@ var popup = new PopupFeature({
         title: "Surface de zone humide",
         format: function (val, f) {
           if (f.get("surf_prairie_nat_parc")) {
-            return (
-              Math.round(f.get("surf_prairie_nat_parc"), 2).toLocaleString() +
-              " ha"
-            );
+            return f.get("surf_prairie_nat_parc").toLocaleString() + " ha";
           } else {
             return "0 ha";
           }
@@ -1039,7 +911,18 @@ var t = new Toggle({
 });
 map.addControl(t);
 
-// Print control
-var printControl = new PrintDialog({ lang: "fr" });
-printControl.setSize("A4");
-map.addControl(printControl);
+/**BOUTONs COLLAPSE TABLE */
+var button_res = document.getElementById("button_res");
+var elt_res = document.createElement("DIV");
+elt_res.className = "res_table ol-control";
+elt_res.appendChild(button_res);
+
+var ResControl = new Control({
+  element: elt_res,
+});
+map.addControl(ResControl);
+$("#button_res").on("click", function (e) {
+  $(this).text(function (i, old) {
+    return old == "+" ? "-" : "+";
+  });
+});

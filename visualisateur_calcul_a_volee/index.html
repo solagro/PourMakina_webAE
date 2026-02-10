@@ -11,6 +11,9 @@
   		<!-- Load plotly.js into the DOM -->
 	<script src='https://cdn.plot.ly/plotly-2.24.1.min.js'></script>
   </head>
+    <!-- bootstarp -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+   
   <!-- Pour pouvoir appliquer style issue d'un SLD/XML-->
   <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/codemirror.min.css" />
@@ -21,15 +24,75 @@
   <div id="menu">
     <h1>Exploitation Test</h1>
     <p style="border-bottom:1px solid #999;">
-      <div class="data"></div>
+      <div class="data">
+         <div id='myDiv' style="display:none;">
+  
+  </div>
+      </div>
     </p>
 
    
     
   </div>
-  <div id='myDiv' style="display:none;">
-  
-  </div>
+ 
+<!--   <div id="result_table">
+  </div> -->
+ <button class="btn btn-secondary btn-sm " id="button_res" type="button" data-bs-toggle="collapse" data-bs-target="#intro">+</button>
+
+
+<div id="intro" class="collapse" > 
+  <table id="tableau_resultats" class="beta" >
+    <tr>
+      <th>fid</th>
+      <th>pacage</th>
+      <th>campagne</th>
+              <th>sau</th>
+              <th>sau_bio</th>
+              <th>part_sau_bio</th>
+              <th>surf_cop</th>
+              <th>surf_cer_a_paille</th>
+              <th>surf_cer_secondaires</th>
+              <th>surf_prairies_permanentes</th>
+              <th>surf_toujours_en_herbe</th>
+              <th>surf_prairies_temporaires</th>
+              <th>surf_legumineuses</th>
+              <th>part_surf_legumineuses</th>
+              <th>nbr_parcelles</th>
+              <th>nbr_parc_moins_6ha</th>
+              <th>part_parc_moins_6ha</th>
+              <th>taille_moyenne_parcelle</th>
+              <th>surf_parc_moins_6ha</th>
+              <th>part_surf_parc_moins_6ha</th>
+              <th>surf_couverte_en_hiver</th>
+              <th>part_surf_couverte_en_hiver</th>
+              <th>nb_cultures</th>
+              <th>nb_cultures_sup_10pct_sau</th>
+              <th>diversite_assolement</th>
+              <th>surf_bande_enherbee</th>
+              <th>surf_bta_adj_haie</th>
+              <th>surf_bta_adj_lisiere</th>
+              <th>surf_bordure_foret</th>
+              <th>surf_jachere</th>
+              <th>surf_jachere_iae</th>
+              <th>surf_jachere_derog_uk</th>
+              <th>long_haie_ml</th>
+              <th>lon_haie_bta_ml</th>
+              <th>long_haie_hors_bta_ml</th>
+              <th>long_lisiere_ml</th>
+              <th>long_lisiere_bfps_ml</th>
+              <th>long_lisiere_hors_bfps_ml</th>
+              <th>part_haie_10m</th>
+              <th>part_haie_20m</th>
+              <th>part_lisiere_5m</th>
+              <th>part_lisiere_8m</th>
+              <th>part_IAE(haies10m, lisières5m, bta, jac)</th>
+              <th>part_IAE(haies10m, lisières5m, prairies_perm, bta, jac)</th>
+    </tr>
+</table>
+
+    </div> 
+
+
     <!-- textarea pour le style de la carte -->
     <textarea id="sld" style="display:none;"></textarea>
 <!--Pour éviter l'erreur: Uncaught ReferenceError: exports is not defined -->
@@ -40,7 +103,10 @@
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.41.0/mode/xml/xml.min.js"></script>
 <!--jquery-->
-      <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
+     	 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<!--bootstarp-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
       <!-- monotone-chain-convex-hull -->
       <script src="https://cdn.jsdelivr.net/npm/monotone-chain-convex-hull@1.1.0/lib/index.min.js"></script>
     <!-- lien vers script main.js -->
