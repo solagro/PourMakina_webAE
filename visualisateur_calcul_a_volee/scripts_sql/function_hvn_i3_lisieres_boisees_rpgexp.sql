@@ -55,7 +55,7 @@ FROM postgisftw.rpgexp_json_to_table(territoire,in_geom) a
 (
 SELECT concat(a.pacage,'_',a.numero_i,'_', a.numero_p) as id_parcel,a.zt10m,st_union(c.geom) as obst_geom
 	FROM init a
-	 JOIN app_webae_dev.mv_haies_lisieres_obstacles c
+	 JOIN app_hvn_dev.mv_haies_lisieres_obstacles c
 	 ON NOT st_intersects(st_transform(a.geom,2154),c.geom) AND st_intersects(st_transform(a.zt10m,2154),c.geom)
  group by concat(a.pacage,'_',a.numero_i,'_', a.numero_p),a.zt10m
 )
@@ -254,7 +254,7 @@ FROM postgisftw.rpgexp_json_to_table(territoire,in_geom) a
 (
 SELECT concat(a.pacage,'_',a.numero_i,'_', a.numero_p) as id_parcel,a.zt10m,st_union(c.geom) as obst_geom
 	FROM init a
-	 JOIN app_webae_dev.mv_haies_lisieres_obstacles c
+	 JOIN app_hvn_dev.mv_haies_lisieres_obstacles c
 	 ON NOT st_intersects(st_transform(a.geom,2154),c.geom) AND st_intersects(st_transform(a.zt10m,2154),c.geom)
  group by concat(a.pacage,'_',a.numero_i,'_', a.numero_p),a.zt10m
 )
